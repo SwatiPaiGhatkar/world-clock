@@ -59,9 +59,9 @@ footer {
   margin-bottom: 15px;
 }
 .time {
-  display: flex;
   font-size: 24px;
   font-weight: bold;
+  margin-right: 30px;
 }
 .time small {
   font-size: 13px;
