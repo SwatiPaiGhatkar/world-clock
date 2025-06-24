@@ -20,14 +20,44 @@ setInterval(function () {
   );
 }, 1000);
 
+let cityUpdateInterval;
+let currentCityTimeZone;
+
 function updateCity(event) {
-  let cityTimeZone = event.target.value;
+  let cityTimeZone = event ? event.target.value : currentCityTimeZone;
   if (cityTimeZone === "current") {
     cityTimeZone = moment.tz.guess();
   }
-  let cityName = cityTimeZone.replace("_", " ").split("/")[1];
-  let cityTime = moment().tz(cityTimeZone);
 
+  // Store the timezone for interval updates
+  currentCityTimeZone = cityTimeZone;
+
+  let cityName = cityTimeZone.replace("_", " ").split("/")[1];
+
+  // Clear existing interval and create new one with cityTime variable
+  if (event) {
+    if (cityUpdateInterval) {
+      clearInterval(cityUpdateInterval);
+    }
+    cityUpdateInterval = setInterval(function () {
+      let cityTime = moment().tz(cityTimeZone);
+      let cityElement = document.querySelector("#container-city");
+      cityElement.innerHTML = `
+      <div class="city">
+            <div>
+              <h2>${cityName}</h2>
+              <div class="date"> ${cityTime.format("MMMM Do YYYY")}</div>
+            </div>
+            <div class="time">${cityTime.format(
+              "h:mm:ss"
+            )} <small> ${cityTime.format("A")}</small></div>
+          </div> <small> <a href="/" >Back to Home Page</a></small>
+      `;
+    }, 1000);
+  }
+
+  // Initial update when city is selected
+  let cityTime = moment().tz(cityTimeZone);
   let cityElement = document.querySelector("#container-city");
   cityElement.innerHTML = `
   <div class="city">
@@ -38,9 +68,10 @@ function updateCity(event) {
         <div class="time">${cityTime.format(
           "h:mm:ss"
         )} <small> ${cityTime.format("A")}</small></div>
-      </div> <small> <a href="/">Back to Home Page</a></small>
+      </div> <small> <a href="/" >Back to Home Page</a></small>
   
   `;
 }
+
 let citySelectElement = document.querySelector("#city");
 citySelectElement.addEventListener("change", updateCity);
